@@ -26,6 +26,26 @@ func New(log *log.Logger) *Server {
 }
 
 func (s *Server) AddListener(topic string, fn CallBack) {
+
+type Server struct {
+	sync   sync.Mutex
+	log    *log.Logger
+	Topics map[string][]CallBack
+}
+
+func New() *Server {
+	var l = log.New()
+	l.Level = log.DebugLevel
+	return &Server{
+		log: l,
+		Topics: make(map[string][]struct {
+			Name     string
+			callback func(msg []byte)
+		}),
+	}
+}
+
+func (s *Server) AddListener(topic string, fn CallBack) {
 	s.sync.Lock()
 	tmp, ok := s.Topics[topic]
 	if ok {
